@@ -1,2 +1,0 @@
-- avere l'api di Spotify
-- 
