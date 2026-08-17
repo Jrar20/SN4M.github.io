@@ -1,1 +1,43 @@
-/*per ora sto usando bootstrap e non ho bisogno di modifiche con css*/
+/* Custom Styles for Login Form */
+
+/* Contenitore principale (Header + Form) */
+.login-wrapper {
+    max-width: clamp(300px, 82vw, 420px);
+    gap: clamp(1.2rem, 3vh, 2rem);
+}
+
+/* Dimensioni dinamiche del Logo e del Titolo*/
+.logo-img {
+    width: clamp(55px, 15vw, 80px);
+}
+
+.logo-title {
+    /* Testo aumentato: passa da un minimo di 2.5rem a un massimo di 4.5rem */
+    font-size: clamp(2.5rem, 11vw, 4.5rem);
+    line-height: 1;
+}
+
+/* Form e spaziatura interna */
+.login-form {
+    gap: clamp(0.8rem, 2.2vh, 1.2rem);
+}
+
+/* Etichette e campi di input */
+.form-label-responsive {
+    font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+}
+
+.form-control-responsive {
+    padding: clamp(0.5rem, 1.2vh, 0.75rem) 0.75rem;
+}
+
+/* Pulsante Submit */
+.btn-submit {
+    padding: clamp(0.5rem, 1.2vh, 0.75rem) clamp(1.5rem, 6vw, 2.5rem);
+    font-size: clamp(0.95rem, 2.8vw, 1.1rem);
+}
+
+/* Testo del link di registrazione */
+.link-text {
+    font-size: clamp(0.85rem, 2.4vw, 1rem);
+}

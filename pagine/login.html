@@ -4,27 +4,49 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>SN4M Login</title>
-        <link rel="stylesheet" href="login.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+        <link rel="stylesheet" href="login.css">
     </head>
     <body>
-        <div class="w-100 min-vh-100 d-flex flex-column justify-content-center align-items-center bg-black bg-gradient text-white">
-            <div class="text-center d-flex mb-3">
-                <img src="spotifyLogo.png" class="img-fluid d-block mx-3 mb-3" style="max-width: 60px;" alt="SN4Mlogo">
-                <div class="d-flex mt-1">
-                    <h1>SN</h1><h1 class="text-success">4</h1><h1>M</h1>
+        <!-- Div contenitore -->
+        <div class="min-vh-100 d-flex align-items-center justify-content-center bg-black bg-gradient text-white p-3">
+            
+            <!-- Contenitore unico che racchiude Header e Form -->
+            <div class="login-wrapper w-100 d-flex flex-column align-items-center">
+                
+                <!-- Intestazione -->
+                <div class="d-flex align-items-center justify-content-center">
+                    <img src="spotifyLogo.png" class="logo-img" alt="SN4Mlogo">
+                    <h1 class="fw-bold mb-0 ms-3 logo-title">SN4M</h1>
                 </div>
+
+                <!-- Form di Login -->
+                <form class="login-form w-100 d-flex flex-column align-items-center">
+                    <!-- Campo Email -->
+                    <div class="w-100">
+                        <label for="email" class="form-label form-label-responsive">Email address</label>
+                        <input type="email" class="form-control form-control-responsive" id="email" placeholder="Inserisci qui">
+                    </div>
+                    
+                    <!-- Campo Password -->
+                    <div class="w-100">
+                        <label for="psw" class="form-label form-label-responsive">Password</label>
+                        <input type="password" class="form-control form-control-responsive" id="psw" placeholder="Inserisci qui">
+                    </div>
+                    
+                    <!-- Bottone Submit -->
+                    <button type="submit" class="btn btn-success btn-submit mt-2">
+                        Accedi
+                    </button>
+                    
+                    <!-- Link registrati -->
+                    <p class="text-center mb-0 link-text">
+                        <a href="registrazioneUtente.html" class="link-success">Oppure registrati ora!</a>
+                    </p>
+                </form>
+
             </div>
-            <div class="input-group mb-3 w-25">
-                <span class="input-group-text" id="email">Email</span>
-                <input type="text" class="form-control" placeholder="Inserisci qui" aria-describedby="email">
-            </div>
-            <div class="input-group mb-3 w-25">
-                <span class="input-group-text" id="psw">Password</span>
-                <input type="text" class="form-control" placeholder="Inserisci qui" aria-describedby="psw">
-            </div>
-            <button type="submit" class="btn btn-success btn-lg my-3">Login</button>
-            <p><a href="registrazioneUtente.html" class="link-success">Oppure registrati ora!</a></p>
+
         </div>
         <script src="login.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
