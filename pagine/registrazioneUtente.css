@@ -1,0 +1,31 @@
+/* Reset essenziale (rimossi width/height 100% inutili) */
+body {
+  margin: 0;
+}
+
+/* Contenitore a schermo intero fluido con padding dinamico */
+.fullscreen-container {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: clamp(1rem, 4vw, 2.5rem);
+}
+
+/* Titolo con dimensione del testo proporzionata allo schermo */
+.brand-title {
+  font-size: clamp(2.2rem, 6vw, 3.5rem);
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Form fluido: min 280px (mobile stretto), 90% della larghezza schermo, max 400px (desktop) */
+.responsive-form {
+  width: clamp(280px, 90vw, 400px);
+}
+
+/* Adattamento dinamico del testo dei badge nei form */
+.input-group-text {
+  font-size: clamp(0.8rem, 2.2vw, 0.95rem);
+}
