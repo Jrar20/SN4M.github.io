@@ -22,10 +22,21 @@ body {
 
 /* Form fluido: min 280px (mobile stretto), 90% della larghezza schermo, max 400px (desktop) */
 .responsive-form {
+  gap: clamp(0.8rem, 2.2vh, 0.8rem);
   width: clamp(280px, 90vw, 400px);
 }
 
 /* Adattamento dinamico del testo dei badge nei form */
 .input-group-text {
-  font-size: clamp(0.8rem, 2.2vw, 0.95rem);
+  font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+}
+
+.form-control-responsive {
+    padding: clamp(0.5rem, 1.2vh, 0.75rem) 0.75rem;
+}
+
+/* Pulsante Submit */
+.btn-submit {
+    padding: clamp(0.5rem, 1.2vh, 0.75rem) clamp(1.5rem, 6vw, 2.5rem);
+    font-size: clamp(0.95rem, 2.8vw, 1.1rem);
 }
