@@ -1,4 +1,16 @@
-/* Custom Styles for Login Form */
+/* Reset essenziale (rimossi width/height 100% inutili) */
+body {
+  margin: 0;
+}
+
+/* Contenitore a schermo intero fluido con padding dinamico */
+.fullscreen-container {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
 /* Contenitore principale (Header + Form) */
 .login-wrapper {

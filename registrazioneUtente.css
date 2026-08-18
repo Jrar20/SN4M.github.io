@@ -10,7 +10,12 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: clamp(1rem, 4vw, 2.5rem);
+}
+
+/* Contenitore principale (Header + Form) */
+.register-wrapper {
+    max-width: clamp(300px, 82vw, 420px);
+    gap: clamp(1.2rem, 3vh, 2rem);
 }
 
 /* Titolo con dimensione del testo proporzionata allo schermo */
@@ -22,8 +27,7 @@ body {
 
 /* Form fluido: min 280px (mobile stretto), 90% della larghezza schermo, max 400px (desktop) */
 .responsive-form {
-  gap: clamp(0.8rem, 2.2vh, 0.8rem);
-  width: clamp(280px, 90vw, 400px);
+  gap: clamp(0.8rem, 2.2vh, 1.2rem);
 }
 
 /* Adattamento dinamico del testo dei badge nei form */
