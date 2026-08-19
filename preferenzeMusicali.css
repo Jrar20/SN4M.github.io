@@ -1,0 +1,63 @@
+.griglia {
+    display: grid;
+    
+    /* 1. SU MOBILE: Si adatta da 1 a 2 colonne (minimo 150px) */
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+
+    grid-auto-rows: max-content;
+    align-items: start;
+
+    gap: clamp(0.75rem, 2vw, 1.25rem);
+    padding: clamp(1rem, 3vw, 2rem);
+    
+    width: 100%;
+    max-width: 1000px; /* Limita la larghezza totale per mantenere proporzioni pulite */
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* 2. DA TABLET/DESKTOP IN POI: Blocca fisso a massimo 3 colonne */
+@media (min-width: 768px) {
+    .griglia {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Rende la card chiaramente cliccabile */
+.griglia .card {
+    position: relative; /* Necessario per posizionare il check sopra la card */
+    cursor: pointer;
+    transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+/* EFFETTO SELEZIONATO */
+
+/* 1. Scurisce leggermente la card */
+.griglia .card.selected {
+    filter: brightness(0.75); 
+}
+
+/* 2. Crea il pallino con la spunta (✓) in alto a destra */
+.griglia .card.selected::after {
+    content: "✓";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    background-color: #198754; /* Verde Bootstrap / Spotify */
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+}
+
+/* .box-2 {
+    /* Fa occupare a questo div dalla colonna 1 fino alla 3 (esteso)
+    grid-column: 1 / 3; 
+    grid-row: 2;
+} */
