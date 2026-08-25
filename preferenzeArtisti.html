@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Preferenze Artisti o Gruppi</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+        <link rel="stylesheet" href="preferenzeArtisti.css">
+    </head>
+    <body>
+        <div class="min-vh-100 bg-black bg-gradient text-white">
+            <nav class="navbar bg-secondary-subtle">
+                <div class="container-fluid justify-content-center">
+                    <form class="d-flex" role="search">
+                        <input class="form-control me-2" type="search" placeholder="Es. Blues" aria-label="Search"/>
+                        <button class="btn btn-outline-success me-2" type="submit">Cerca</button>
+                        <button id="btnSalvaGeneri" class="btn btn-outline-success" type="submit">Successivo</button>
+                    </form>
+                </div>
+            </nav>
+            <div class="text-center my-3">
+                <h2 class="fw-bold">Cosa ti piace ascoltare?</h2>
+                <span class="text-secondary">Seleziona i tuoi generi preferiti</span>
+            </div>
+            <div class="griglia">
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+        <script src="preferenzeArtisti.js"></script>
+    </body>
+</html>
