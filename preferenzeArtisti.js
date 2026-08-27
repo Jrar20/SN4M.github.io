@@ -113,7 +113,7 @@ async function caricaArtistiIniziali() {
 }
 
 // Cerca artisti specifici tramite la barra
-async function eseguiRicerca(testoCercato) {
+async function eseguiRicerca(artistaCercato) {
     const griglia = document.querySelector('.griglia');
     griglia.innerHTML = '<p class="text-center w-100 mt-5">Ricerca in corso...</p>';
 
@@ -121,7 +121,7 @@ async function eseguiRicerca(testoCercato) {
     if (!token) return;
 
     try {
-        const query = encodeURIComponent(testoCercato);
+        const query = encodeURIComponent(artistaCercato);
         // Cerchiamo 10 risultati correlati alla parola inserita dall'utente
         const url = `https://api.spotify.com/v1/search?q=${query}&type=artist&limit=10`;
         const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
@@ -210,8 +210,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 utentiSalvati[indice].preferenzeArtisti = preferenzeArtisti;
                 localStorage.setItem('sn4m_utenti', JSON.stringify(utentiSalvati));
                 
+                // Impostiamo la sessione attiva
+                localStorage.setItem('utente_loggato', emailUtenteAttuale);
+
+                // Puliamo il dato temporaneo di registrazione
+                localStorage.removeItem('utente_in_registrazione');
+
                 // SOSTITUISCI QUESTO URL CON LA TUA PROSSIMA PAGINA
-                window.location.href = 'home.html'; 
+                window.location.href = 'home.html';
             }
         });
     }
