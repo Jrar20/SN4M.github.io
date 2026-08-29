@@ -8,41 +8,107 @@
         <link rel="stylesheet" href="home.css">
     </head>
     <body>
-        <div class="min-vh-100 bg-black bg-gradient text-white">
-            <nav class="navbar navbar-expand-lg bg-dark border-bottom" data-bs-theme="dark">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="#">Navbar</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="#">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">Link</a>
-                            </li>
+        <div class="d-flex min-vh-100 bg-black text-white">
+
+            <!-- Sidebar Desktop -->
+            <div class="sidebar bg-dark border-end border-secondary d-none d-md-flex flex-column p-3 text-white">
+                <!-- Logo Desktop -->
+                <a href="#" class="d-flex align-items-center mb-4 text-white text-decoration-none">
+                    <span class="fs-3 fw-bold text-success mx-auto brand-text">SN4M</span>
+                </a>
+                <ul class="nav nav-pills flex-column mb-auto gap-2">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active text-white fw-semibold bg-secondary bg-opacity-25" title="Home">
+                            <span class="nav-icon">🏠</span> 
+                            <span class="sidebar-text ms-2">Home</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link text-white fw-semibold hover-grey" title="Ricerca">
+                            <span class="nav-icon">🔍</span> 
+                            <span class="sidebar-text ms-2">Ricerca</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link text-white fw-semibold hover-grey" title="Libreria">
+                            <span class="nav-icon">📚</span> 
+                            <span class="sidebar-text ms-2">Libreria</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link text-white fw-semibold hover-grey" title="Le tue Playlist">
+                            <span class="nav-icon">🎵</span> 
+                            <span class="sidebar-text ms-2">Le tue Playlist</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Colonna Centrale (Navbar + Dashboard) -->
+            <div class="flex-grow-1 d-flex flex-column" style="min-width: 0;">
+                
+                <!-- Navbar Superiore -->
+                <nav class="navbar navbar-expand navbar-dark topbar-musica px-4 py-3 sticky-top">
+                    <div class="container-fluid d-flex justify-content-between align-items-center">
+                        
+                        <!-- Aggiunta classe: logo-sezione -->
+                        <div class="d-flex align-items-center logo-sezione">
+                            <span class="fw-bold fs-4 d-md-none me-2 text-success">SN4M</span>
+                        </div>
+
+                        <!-- Sezione centrale invariata -->
+                        <form class="d-flex mx-auto search-form flex-grow-1 px-2" role="search">
+                            <div class="input-group search-group mx-auto">
+                                <span class="input-group-text bg-dark border-0 text-secondary">🔍</span>
+                                <input class="form-control border-0 bg-dark text-white shadow-none" type="search" placeholder="Cosa ascoltiamo?" aria-label="Search">
+                            </div>
+                        </form>
+
+                        <!-- Aggiunta classe: profilo-sezione -->
+                        <ul class="navbar-nav align-items-center profilo-sezione">
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#">Action</a></li>
-                                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                <a class="nav-link dropdown-toggle d-flex align-items-center text-white text-decoration-none p-1 rounded-pill bg-dark hover-grey" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <img src="https://ui-avatars.com/api/?name=User&background=1DB954&color=fff" alt="User" class="rounded-circle me-2" width="32" height="32">
+                                    <span id="nomeUtenteNav" class="d-none d-md-inline fw-semibold me-2 pe-1">Profilo</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow mt-2 border-0">
+                                    <li><a class="dropdown-item fw-semibold" href="#">Account</a></li>
+                                    <li><hr class="dropdown-divider border-secondary"></li>
+                                    <li><a class="dropdown-item text-danger fw-semibold" href="#" id="btnLogout">Esci</a></li>
                                 </ul>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-                            </li>
                         </ul>
-                        <form class="d-flex" role="search">
-                            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-                            <button class="btn btn-outline-success" type="submit">Search</button>
-                        </form>
                     </div>
-                </div>
+                </nav>
+                
+                <!-- Dashboard Principale -->
+                <main class="flex-grow-1 p-4 main-content">
+                    <h2 class="fw-bold mb-4">I tuoi preferiti</h2>
+                    <!-- Le card degli artisti andranno qui -->
+                </main>
+            </div>
+
+            <!-- Barra Navigazione Inferiore Mobile -->
+            <nav class="mobile-bottom-bar bg-dark border-top border-secondary d-md-none fixed-bottom text-center d-flex justify-content-around py-2">
+                <a href="#" class="text-white text-decoration-none d-flex flex-column align-items-center flex-fill opacity-75">
+                    <span class="fs-5 mb-1">🏠</span>
+                    <small class="fw-semibold" style="font-size: 0.7rem;">Home</small>
+                </a>
+                <a href="#" class="text-white text-decoration-none d-flex flex-column align-items-center flex-fill opacity-75">
+                    <span class="fs-5 mb-1">🔍</span>
+                    <small class="fw-semibold" style="font-size: 0.7rem;">Cerca</small>
+                </a>
+                <a href="#" class="text-white text-decoration-none d-flex flex-column align-items-center flex-fill opacity-75">
+                    <span class="fs-5 mb-1">📚</span>
+                    <small class="fw-semibold" style="font-size: 0.7rem;">Libreria</small>
+                </a>
+                <a href="#" class="text-white text-decoration-none d-flex flex-column align-items-center flex-fill opacity-75">
+                    <span class="fs-5 mb-1">🎵</span>
+                    <small class="fw-semibold" style="font-size: 0.7rem;">Playlist</small>
+                </a>
             </nav>
+            
+            <!-- Qui andrà il resto del contenuto (Sidebar e Area Principale) -->
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
         <script src="home.js"></script>

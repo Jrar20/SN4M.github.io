@@ -53,3 +53,29 @@ body {
 .link-text {
     font-size: clamp(0.85rem, 2.4vw, 1rem);
 }
+
+/* Stile e allineamento per la Checkbox */
+.form-check-input {
+    width: 1.15em;
+    height: 1.15em;
+    border-radius: 4px; /* Border-radius uniforme */
+    cursor: pointer;
+    background-color: #2b3035; /* Sfondo scuro per integrarsi col tema */
+    border: 1px solid #495057;
+}
+
+/* Colore verde quando viene selezionata */
+.form-check-input:checked {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+}
+
+/* Rende cliccabile anche il testo dell'etichetta */
+.form-check-label {
+    cursor: pointer;
+    user-select: none; /* Impedisce la selezione accidentale del testo al doppio click */
+}

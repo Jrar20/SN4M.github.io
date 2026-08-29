@@ -23,7 +23,7 @@
                 </div>
 
                 <!-- Form di Login -->
-                <form class="login-form w-100 d-flex flex-column align-items-center">
+                <form id="form-login" class="login-form w-100 d-flex flex-column align-items-center">
                     <!-- Campo Email -->
                     <div class="w-100">
                         <label for="email" class="form-label form-label-responsive">Email address</label>
@@ -35,11 +35,14 @@
                         <label for="psw" class="form-label form-label-responsive">Password</label>
                         <input type="password" class="form-control form-control-responsive" id="psw" placeholder="Inserisci qui">
                     </div>
+
+                    <div class="form-check d-flex align-items-center gap-2 mb-3 w-100 ps-0">
+                        <input type="checkbox" id="checkpsw" class="form-check-input m-0" onclick="togglePassword()">
+                        <label class="form-check-label link-text" for="checkpsw">Mostra Password</label>
+                    </div>
                     
                     <!-- Bottone Submit -->
-                    <button type="submit" class="btn btn-success btn-submit mt-2">
-                        Accedi
-                    </button>
+                    <button type="submit" class="btn btn-success btn-submit mt-2">Accedi</button>
                     
                     <!-- Link registrati -->
                     <p class="text-center mb-0 link-text">
