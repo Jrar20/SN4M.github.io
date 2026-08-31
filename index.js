@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
             let utentiSalvati = JSON.parse(localStorage.getItem('sn4m_utenti'));
 
             if (utentiSalvati === null) {
-                customAlert("Non ci sono utenti salvati!")
+                alert("Non ci sono utenti salvati!");
+                //customAlert("Non ci sono utenti salvati!");
                 return;
             }
 
