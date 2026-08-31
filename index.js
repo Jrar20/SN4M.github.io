@@ -15,6 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // 3. Recupera gli utenti già salvati nel Web Storage
             let utentiSalvati = JSON.parse(localStorage.getItem('sn4m_utenti'));
 
+            if (utentiSalvati === null) {
+                customAlert("Non ci sono utenti salvati!")
+                return;
+            }
+
             // 4. Controllo se l'email e password ci sono
             const emailEsistente = utentiSalvati.find(utente => utente.email === email);
             const passwordEsistente = utentiSalvati.find(utente => utente.password === password);
