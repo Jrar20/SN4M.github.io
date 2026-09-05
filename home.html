@@ -58,10 +58,29 @@
                         </div>
 
                         <!-- Sezione centrale ricerca -->
-                        <form class="d-flex mx-auto search-form flex-grow-1 px-2" role="search">
+                        <form class="d-flex mx-auto search-form flex-grow-1 px-2" role="search" onsubmit="eseguiRicercaGenerale(event)">
                             <div class="input-group search-group mx-auto">
-                                <span class="input-group-text bg-dark border-0 text-secondary">🔍</span>
-                                <input class="form-control border-0 bg-dark text-white shadow-none" type="search" placeholder="Cosa ascoltiamo?" aria-label="Search">
+                                <!-- Menu a tendina integrato -->
+                                <select class="form-select bg-transparent text-secondary border-0 shadow-none ps-3 pe-4" id="contestoRicerca" style="max-width: 140px; font-size: 0.85rem; cursor: pointer;">
+                                    <optgroup label="API Spotify">
+                                        <option value="canzone_titolo">Canzone (Titolo)</option>
+                                        <option value="canzone_artista">Canzone (Cantante)</option>
+                                        <option value="canzone_genere">Canzone (Genere)</option>
+                                    </optgroup>
+                                    <optgroup label="Ricerca Interna">
+                                        <option value="comunita">Comunità</option>
+                                        <option value="playlist_tag">Playlist (Tag)</option>
+                                        <option value="playlist_brano">Playlist (Brano)</option>
+                                    </optgroup>
+                                </select>
+                                
+                                <!-- Input di testo -->
+                                <input class="form-control border-0 bg-transparent text-white shadow-none px-2" id="testoRicerca" type="search" placeholder="Cosa cerchi?" required>
+                                
+                                <!-- Pulsante di avvio ricerca -->
+                                <button class="btn btn-link text-secondary border-0 text-decoration-none pe-3" type="submit">
+                                    <i class="bi bi-search"></i>
+                                </button>
                             </div>
                         </form>
 
@@ -92,7 +111,6 @@
                     </div>
 
                     <!-- 2. SEZIONE PLAYLIST COMPLETE (Macro-scenario 1) -->
-                    <!-- 2. SEZIONE PLAYLIST COMPLETE -->
                     <div id="vista-playlist" class="sezione-app d-none">
                         <h2 class="fw-bold mb-4">Le tue Playlist</h2>
                         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalNuovaPlaylist" onclick="preparaNuovaPlaylist()">+ Nuova Playlist</button>
@@ -103,8 +121,17 @@
 
                     <!-- 3. SEZIONE COMUNITÀ (Macro-scenario 2) -->
                     <div id="vista-comunita" class="sezione-app d-none">
-                        <h2 class="fw-bold mb-4">Gestione Comunità</h2>
-                        <!-- Contenuto comunità -->
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="fw-bold m-0">Gestione Comunità Musicali</h2>
+                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalNuovaComunita" onclick="preparaNuovaComunita()">+ Crea Comunità</button>
+                        </div>
+                        
+                        <p class="text-secondary mb-4">Unisciti alle comunità di appassionati o crea il tuo spazio musicale condiviso.</p>
+
+                        <!-- Griglia delle Comunità -->
+                        <div id="griglia-comunita" class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+                            <!-- Generato dinamicamente da JS -->
+                        </div>
                     </div>
 
                     <!-- 4. SEZIONE CONDIVISIONI (Macro-scenario 3) -->
@@ -141,6 +168,57 @@
                             <div class="modal-footer border-secondary">
                                 <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Annulla</button>
                                 <button type="button" class="btn btn-success fw-bold px-4" id="btnSalvaPlaylist" onclick="salvaPlaylist()">Salva</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modale Selezione Playlist per Aggiunta Brano -->
+                <div class="modal fade" id="modalAggiungiBrano" tabindex="-1" aria-labelledby="modalAggiungiBranoLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark text-white border-secondary shadow-lg">
+                            <div class="modal-header border-secondary">
+                                <h5 class="modal-title fw-bold" id="modalAggiungiBranoLabel">Scegli la Playlist</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="text-secondary small">Seleziona la playlist in cui vuoi inserire il brano:</p>
+                                <div id="listaPlaylistPerAggiunta" class="list-group bg-dark">
+                                    <!-- Generato dinamicamente via JS -->
+                                </div>
+                            </div>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">Annulla</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modale Crea/Modifica Comunità -->
+                <div class="modal fade" id="modalNuovaComunita" tabindex="-1" aria-labelledby="modalNuovaComunitaLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark text-white border-secondary shadow-lg">
+                            <div class="modal-header border-secondary">
+                                <h5 class="modal-title fw-bold" id="titoloModaleComunita">Crea Comunità</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="formNuovaComunita">
+                                    <div class="mb-3">
+                                        <label for="titoloComunita" class="form-label fw-semibold">Titolo Comunità</label>
+                                        <input type="text" class="form-control bg-dark text-white border-secondary shadow-none" id="titoloComunita" placeholder="Es. Amici del Jazz" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="descrizioneComunita" class="form-label fw-semibold">Descrizione</label>
+                                        <textarea class="form-control bg-dark text-white border-secondary shadow-none" id="descrizioneComunita" rows="3" placeholder="Di cosa parla questa comunità?" required></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="tagComunita" class="form-label fw-semibold">Tag</label>
+                                        <input type="text" class="form-control bg-dark text-white border-secondary shadow-none" id="tagComunita" placeholder="Es. #jazz #improvvisazione" required>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Annulla</button>
+                                <button type="button" class="btn btn-success fw-bold px-4" id="btnSalvaComunita" onclick="salvaComunita()">Salva</button>
                             </div>
                         </div>
                     </div>

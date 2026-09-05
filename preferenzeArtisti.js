@@ -1,5 +1,4 @@
 // --- 1. CONFIGURAZIONE E CREDENZIALI ---
-// INSERISCI QUI LE TUE CHIAVI
 const client_id = "5ab00f23703146009915fd12013c5b01";
 const client_secret = "f726d49ee5dc418c96e26cdf03b6acb2";
 

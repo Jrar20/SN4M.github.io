@@ -179,3 +179,32 @@ span, h2 {
         padding-bottom: calc(70px + env(safe-area-inset-bottom)) !important;
     }
 }
+
+/* ===================================================
+   GESTIONE SCROLL E AMPIEZZA DETTAGLIO PLAYLIST
+   =================================================== */
+
+.playlist-table-container {
+    max-height: calc(100vh - 350px); /* Si adatta dinamicamente all'altezza dello schermo */
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+/* Personalizzazione della barra di scorrimento (stile dark/spotify) */
+.playlist-table-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.playlist-table-container::-webkit-scrollbar-track {
+    background: #121212;
+}
+
+.playlist-table-container::-webkit-scrollbar-thumb {
+    background: #3e3e3e;
+    border-radius: 4px;
+}
+
+.playlist-table-container::-webkit-scrollbar-thumb:hover {
+    background: #1DB954; /* Verde Spotify al passaggio del mouse */
+}
