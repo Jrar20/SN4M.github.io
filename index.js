@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (utentiSalvati === null) {
                 alert("Non ci sono utenti salvati!");
-                //customAlert("Non ci sono utenti salvati!");
                 return;
             }
 
@@ -32,34 +31,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Reindirizzamento alla pagina home
                 window.location.href = 'home.html';
             } else {
-                customAlert("Email o password errata!");
+                document.getElementById("errEmailPsw").classList.remove("d-none");
                 return; // Interrompe la funzione
             }
         });
     }
 });
-
-window.customAlert = function(messaggio) {
-    const dialog = document.createElement('dialog');
-    // Applica direttamente le classi scure di Bootstrap che già usi
-    dialog.className = "bg-dark text-white rounded-4 border border-secondary shadow-lg p-0";
-    dialog.style.minWidth = "300px";
-    
-    dialog.innerHTML = `
-        <div class="p-4 text-center">
-            <p class="mb-4 fs-5 fw-semibold">${messaggio}</p>
-            <form method="dialog">
-                <button class="btn btn-success rounded-pill px-4 fw-bold shadow-none">OK</button>
-            </form>
-        </div>
-    `;
-    
-    document.body.appendChild(dialog);
-    dialog.showModal(); // Mostra il popup oscurando lo sfondo
-    
-    // Si autodistrugge quando l'utente clicca OK
-    dialog.addEventListener('close', () => dialog.remove());
-}
 
 function togglePassword() {
   const input = document.getElementById("psw");

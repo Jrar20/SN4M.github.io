@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Home SN4M</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
         <link rel="stylesheet" href="home.css">
     </head>
     <body>
@@ -13,32 +14,32 @@
             <!-- Sidebar Desktop -->
             <div class="sidebar bg-dark border-end border-secondary d-none d-md-flex flex-column p-3 text-white">
                 <!-- Logo Desktop -->
-                <a href="#" class="d-flex align-items-center mb-4 text-white text-decoration-none">
+                <a href="#vista-riepilogo" class="d-flex align-items-center mb-4 text-white text-decoration-none">
                     <span class="fs-3 fw-bold text-success mx-auto brand-text">SN4M</span>
                 </a>
-                <ul class="nav nav-pills flex-column mb-auto gap-2">
+                <ul class="nav nav-pills flex-column mb-auto gap-2" id="menu-sidebar">
                     <li class="nav-item">
-                        <a href="#" class="nav-link active text-white fw-semibold bg-secondary bg-opacity-25" title="Home">
-                            <span class="nav-icon">🏠</span> 
+                        <a href="#vista-riepilogo" class="nav-link nav-link-app text-white fw-semibold hover-grey" title="Home">
+                            <span class="nav-icon">🏠</span>
                             <span class="sidebar-text ms-2">Home</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="nav-link text-white fw-semibold hover-grey" title="Ricerca">
-                            <span class="nav-icon">🔍</span> 
-                            <span class="sidebar-text ms-2">Ricerca</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="nav-link text-white fw-semibold hover-grey" title="Libreria">
-                            <span class="nav-icon">📚</span> 
-                            <span class="sidebar-text ms-2">Libreria</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="nav-link text-white fw-semibold hover-grey" title="Le tue Playlist">
-                            <span class="nav-icon">🎵</span> 
+                        <a href="#vista-playlist" class="nav-link nav-link-app text-white fw-semibold hover-grey" title="Playlist">
+                            <span class="nav-icon">🔍</span>
                             <span class="sidebar-text ms-2">Le tue Playlist</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#vista-comunita" class="nav-link nav-link-app text-white fw-semibold hover-grey" title="Comunita">
+                            <span class="nav-icon">📚</span>
+                            <span class="sidebar-text ms-2">Gestione Comunità</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#vista-condivisioni" class="nav-link nav-link-app text-white fw-semibold hover-grey" title="Condivisioni">
+                            <span class="nav-icon">🎵</span>
+                            <span class="sidebar-text ms-2">Bacheca Condivisioni</span>
                         </a>
                     </li>
                 </ul>
@@ -48,15 +49,15 @@
             <div class="flex-grow-1 d-flex flex-column" style="min-width: 0;">
                 
                 <!-- Navbar Superiore -->
-                <nav class="navbar navbar-expand navbar-dark topbar-musica px-4 py-3 sticky-top">
+                <nav class="navbar navbar-expand navbar-dark topbar-musica px-2 px-md-4 py-3 sticky-top">
                     <div class="container-fluid d-flex justify-content-between align-items-center">
                         
-                        <!-- Aggiunta classe: logo-sezione -->
+                        <!-- Logo Sezione (Non si rimpicciolisce più) -->
                         <div class="d-flex align-items-center logo-sezione">
                             <span class="fw-bold fs-4 d-md-none me-2 text-success">SN4M</span>
                         </div>
 
-                        <!-- Sezione centrale invariata -->
+                        <!-- Sezione centrale ricerca -->
                         <form class="d-flex mx-auto search-form flex-grow-1 px-2" role="search">
                             <div class="input-group search-group mx-auto">
                                 <span class="input-group-text bg-dark border-0 text-secondary">🔍</span>
@@ -64,7 +65,7 @@
                             </div>
                         </form>
 
-                        <!-- Aggiunta classe: profilo-sezione -->
+                        <!-- Profilo Sezione (Sempre cliccabile) -->
                         <ul class="navbar-nav align-items-center profilo-sezione">
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle d-flex align-items-center text-white text-decoration-none p-1 rounded-pill bg-dark hover-grey" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -83,34 +84,93 @@
                 
                 <!-- Dashboard Principale -->
                 <main class="flex-grow-1 p-4 main-content">
-                    <h2 class="fw-bold mb-4">I tuoi preferiti</h2>
-                    <!-- Le card degli artisti andranno qui -->
+                    <!-- 1. SEZIONE RIEPILOGO (Quella mostrata al login) -->
+                    <div id="vista-riepilogo" class="sezione-app">
+                        <h2 class="fw-bold mb-4">Benvenuto nella tua Home</h2>
+                        <!-- Qui metteremo i 3 quadranti del tuo disegno -->
+                        <a href="#vista-playlist" class="btn btn-success">Vai a tutte le Playlist</a>
+                    </div>
+
+                    <!-- 2. SEZIONE PLAYLIST COMPLETE (Macro-scenario 1) -->
+                    <!-- 2. SEZIONE PLAYLIST COMPLETE -->
+                    <div id="vista-playlist" class="sezione-app d-none">
+                        <h2 class="fw-bold mb-4">Le tue Playlist</h2>
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalNuovaPlaylist" onclick="preparaNuovaPlaylist()">+ Nuova Playlist</button>
+                        <div id="griglia-playlist" class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4 mt-2">
+                            <!-- Generato dinamicamente da JS -->
+                        </div>
+                    </div>
+
+                    <!-- 3. SEZIONE COMUNITÀ (Macro-scenario 2) -->
+                    <div id="vista-comunita" class="sezione-app d-none">
+                        <h2 class="fw-bold mb-4">Gestione Comunità</h2>
+                        <!-- Contenuto comunità -->
+                    </div>
+
+                    <!-- 4. SEZIONE CONDIVISIONI (Macro-scenario 3) -->
+                    <div id="vista-condivisioni" class="sezione-app d-none">
+                        <h2 class="fw-bold mb-4">Bacheca Condivisioni</h2>
+                        <!-- Contenuto condivisioni -->
+                    </div>
                 </main>
+                <!-- Modale Nuova Playlist -->
+                <div class="modal fade" id="modalNuovaPlaylist" tabindex="-1" aria-labelledby="modalNuovaPlaylistLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark text-white border-secondary shadow-lg">
+                            <div class="modal-header border-secondary">
+                                <h5 class="modal-title fw-bold" id="titoloModalePlaylist">Crea Nuova Playlist</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="formNuovaPlaylist">
+                                    <div class="mb-3">
+                                        <label for="titoloPlaylist" class="form-label fw-semibold">Titolo</label>
+                                        <input type="text" class="form-control bg-dark text-white border-secondary shadow-none" id="titoloPlaylist" placeholder="Es. Rock Classics" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="descrizionePlaylist" class="form-label fw-semibold">Descrizione Testuale</label>
+                                        <textarea class="form-control bg-dark text-white border-secondary shadow-none" id="descrizionePlaylist" rows="3" placeholder="Di cosa tratta questa playlist?" required></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="tagPlaylist" class="form-label fw-semibold">Tag Descrittivi</label>
+                                        <input type="text" class="form-control bg-dark text-white border-secondary shadow-none" id="tagPlaylist" placeholder="Es. #rock #pop #anni80" required>
+                                        <div class="form-text text-secondary">Inserisci uno o più tag separati da uno spazio. Il simbolo # verrà aggiunto automaticamente se dimenticato.</div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Annulla</button>
+                                <button type="button" class="btn btn-success fw-bold px-4" id="btnSalvaPlaylist" onclick="salvaPlaylist()">Salva</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Barra Navigazione Inferiore Mobile -->
-            <nav class="mobile-bottom-bar bg-dark border-top border-secondary d-md-none fixed-bottom text-center d-flex justify-content-around py-2">
-                <a href="#" class="text-white text-decoration-none d-flex flex-column align-items-center flex-fill opacity-75">
+            <nav class="mobile-bottom-bar bg-dark border-top border-secondary d-md-none fixed-bottom text-center d-flex justify-content-around">
+                <a href="#vista-riepilogo" class="nav-link-app text-white text-decoration-none d-flex flex-column align-items-center flex-fill opacity-75">
                     <span class="fs-5 mb-1">🏠</span>
                     <small class="fw-semibold" style="font-size: 0.7rem;">Home</small>
                 </a>
-                <a href="#" class="text-white text-decoration-none d-flex flex-column align-items-center flex-fill opacity-75">
+                <a href="#vista-playlist" class="nav-link-app text-white text-decoration-none d-flex flex-column align-items-center flex-fill opacity-75">
                     <span class="fs-5 mb-1">🔍</span>
-                    <small class="fw-semibold" style="font-size: 0.7rem;">Cerca</small>
-                </a>
-                <a href="#" class="text-white text-decoration-none d-flex flex-column align-items-center flex-fill opacity-75">
-                    <span class="fs-5 mb-1">📚</span>
-                    <small class="fw-semibold" style="font-size: 0.7rem;">Libreria</small>
-                </a>
-                <a href="#" class="text-white text-decoration-none d-flex flex-column align-items-center flex-fill opacity-75">
-                    <span class="fs-5 mb-1">🎵</span>
                     <small class="fw-semibold" style="font-size: 0.7rem;">Playlist</small>
                 </a>
+                <a href="#vista-comunita" class="nav-link-app text-white text-decoration-none d-flex flex-column align-items-center flex-fill opacity-75">
+                    <span class="fs-5 mb-1">📚</span>
+                    <small class="fw-semibold" style="font-size: 0.7rem;">Comunità</small>
+                </a>
+                <a href="#vista-condivisioni" class="nav-link-app text-white text-decoration-none d-flex flex-column align-items-center flex-fill opacity-75">
+                    <span class="fs-5 mb-1">🎵</span>
+                    <small class="fw-semibold" style="font-size: 0.7rem;">Condivisioni</small>
+                </a>
             </nav>
-            
-            <!-- Qui andrà il resto del contenuto (Sidebar e Area Principale) -->
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
         <script src="home.js"></script>
+        <script src="h-playlist.js"></script>
+        <script src="h-comunita.js"></script>
+        <script src="h-condivisioni.js"></script>
     </body>
 </html>

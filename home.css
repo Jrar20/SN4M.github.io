@@ -2,25 +2,60 @@ body, html {
     overflow-x: hidden;
 }
 
-/* Stile base della Topbar */
+span, h2 {
+    user-select: none;
+}
+
+/* ===================================================
+   TOPBAR E BARRA DI RICERCA FLUIDA
+   =================================================== */
+
 .topbar-musica {
     background-color: rgba(0, 0, 0, 0.7) !important;
-    backdrop-filter: blur(10px); /* Effetto vetro quando scorri sopra gli elementi */
+    backdrop-filter: blur(10px);
     z-index: 1030;
 }
 
-/* Stile barra di ricerca centrale */
+/* Modifica a .profilo-sezione: overflow visibile di default */
+.logo-sezione,
+.profilo-sezione {
+    flex-shrink: 0;
+    position: relative;
+    z-index: 2;
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                margin 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 160px;
+    opacity: 1;
+    overflow: visible; /* PERMETTE AL DROPDOWN DI USCIRE DAI CONFINI */
+    white-space: nowrap;
+}
+
+/* Assicura che il menu a tendina sia sempre in primissimo piano */
+.profilo-sezione .dropdown-menu {
+    z-index: 1050 !important;
+}
+
+/* Form di ricerca con min-width a 0 per non strabordare */
+.search-form {
+    min-width: 0; /* Impedisce al form di allargarsi invisibilmente sopra il profilo */
+    transition: padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .search-group {
     border-radius: 500px;
     overflow: hidden;
     background-color: #242424;
-    width: 100%; /* Occupa tutto lo spazio disponibile... */
-    max-width: 350px; /* ...ma non supera mai i 350px sui monitor grandi */
+    width: 100%;
+    max-width: 350px;
     border: 1px solid transparent;
-    transition: all 0.3s ease;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.search-group:hover, .search-group:focus-within {
+.search-group:hover, 
+.search-group:focus-within {
     border: 1px solid #ffffff;
     background-color: #2a2a2a;
 }
@@ -30,7 +65,7 @@ body, html {
     font-weight: 500;
 }
 
-/* Tasto Profilo interattivo */
+/* Tasto Profilo */
 .hover-grey {
     transition: background-color 0.2s ease;
 }
@@ -39,38 +74,40 @@ body, html {
     background-color: #282828 !important;
 }
 
-/* Rimuove l'icona di default del dropdown per un look più pulito */
 .dropdown-toggle::after {
     display: none; 
 }
 
-/* Espansione della barra di ricerca su Smartphone */
-@media (max-width: 767px) {
-    /* Nasconde il logo e il profilo */
-    .navbar.search-expanded .logo-sezione,
-    .navbar.search-expanded .profilo-sezione {
-        display: none !important;
+/* Espansione fluida della ricerca solo su Mobile (< 768px) */
+@media (max-width: 767.98px) {
+    .topbar-musica.search-expanded .logo-sezione,
+    .topbar-musica.search-expanded .profilo-sezione {
+        opacity: 0;
+        max-width: 0;
+        margin: 0 !important;
+        padding: 0 !important;
+        transform: scale(0.85);
+        pointer-events: none; /* Disabilita i click quando invisibili durante l'espansione */
     }
-    
-    /* Rimuove i margini per far aderire la barra ai bordi */
-    .navbar.search-expanded .search-form {
+
+    .topbar-musica.search-expanded .search-form {
         padding-left: 0 !important;
         padding-right: 0 !important;
     }
-    
-    /* Sblocca il limite di 350px per occupare il 100% dello schermo */
-    .navbar.search-expanded .search-group {
+
+    .topbar-musica.search-expanded .search-group {
         max-width: 100%;
-        border: 1px solid #1DB954; /* Opzionale: illumina di verde il bordo */
+        border-color: #1DB954;
+        box-shadow: 0 0 10px rgba(29, 185, 84, 0.3);
     }
 }
 
+
 /* ===================================================
-   1. SIDEBAR DESKTOP ADATTIVA (FLUIDA + COMPATTA)
+   SIDEBAR DESKTOP
    =================================================== */
 
 .sidebar {
-    /* La larghezza scala da 200px a 250px in base allo schermo */
     width: clamp(200px, 16vw, 250px);
     position: sticky;
     top: 0;
@@ -78,22 +115,18 @@ body, html {
     transition: all 0.25s ease-in-out;
 }
 
-/* Quando riduci la finestra del PC (tra 768px e 991px):
-   La sidebar si rimpicciolisce lasciando solo le icone */
 @media (min-width: 768px) and (max-width: 991px) {
     .sidebar {
-        width: 72px; /* Larghezza ridotta */
+        width: 72px;
         padding-left: 0.5rem !important;
         padding-right: 0.5rem !important;
     }
 
-    /* Nascondiamo le scritte di testo */
     .sidebar .sidebar-text,
     .sidebar .brand-text {
         display: none !important;
     }
 
-    /* Centriamo le icone */
     .sidebar .nav-link {
         text-align: center;
         padding: 0.8rem 0;
@@ -107,31 +140,40 @@ body, html {
 
 
 /* ===================================================
-   2. BARRA INFERIORE MOBILE FLUIDA (TUTTI GLI SMARTPHONE)
+   2. BARRA INFERIORE MOBILE FLUIDA
    =================================================== */
 
 .mobile-bottom-bar {
     z-index: 1040;
     background-color: rgba(33, 37, 41, 0.96) !important;
     backdrop-filter: blur(12px);
-    
-    /* Padding verticale proporzionale allo schermo + margine di sicurezza per le gesture iOS */
-    padding-top: clamp(0.35rem, 1.2vh, 0.7rem);
-    padding-bottom: max(clamp(0.35rem, 1.2vh, 0.7rem), env(safe-area-inset-bottom));
+    padding: 0 !important; /* Rimuove il padding dal padre per permettere l'allineamento ai bordi */
 }
 
-/* Dimensione Icone adattiva: cresce/decresce tra 1.1rem e 1.4rem */
+/* I pulsanti occupano l'intera altezza della barra */
+.mobile-bottom-bar .nav-link-app {
+    padding-top: clamp(0.5rem, 1.2vh, 0.75rem);
+    padding-bottom: max(clamp(0.5rem, 1.2vh, 0.75rem), env(safe-area-inset-bottom));
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+/* Stile per l'elemento ATTIVO: si allarga da bordo a bordo ed elimina l'opacità */
+.mobile-bottom-bar .nav-link-app.active {
+    opacity: 1 !important;
+    background-color: rgba(255, 255, 255, 0.12) !important; /* Grigio fluido a tutta altezza */
+}
+
+/* Dimensione Icone adattiva */
 .mobile-bottom-bar a span {
     font-size: clamp(1.1rem, 4.2vw, 1.35rem) !important;
 }
 
-/* Dimensione Testo adattivo: scala perfettamente da iPhone SE a Pro Max */
+/* Dimensione Testo adattivo */
 .mobile-bottom-bar a small {
     font-size: clamp(0.62rem, 2.2vw, 0.75rem) !important;
     letter-spacing: 0.2px;
 }
 
-/* Evita che i contenuti della Dashboard vengano coperti dalla barra inferiore */
 @media (max-width: 767px) {
     .main-content {
         padding-bottom: calc(70px + env(safe-area-inset-bottom)) !important;
