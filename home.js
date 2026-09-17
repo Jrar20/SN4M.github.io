@@ -124,7 +124,7 @@ function aggiornaVistaDaHash() {
 }
 
 function getNomeUtente() {
-    let utentiSalvati = JSON.parse(localStorage.getItem('sn4m_utenti')) || [];
+    let utentiSalvati = JSON.parse(localStorage.getItem('utenti')) || [];
     const emailUtenteAttuale = localStorage.getItem('utente_loggato');
     const indice = utentiSalvati.findIndex(u => u.email === emailUtenteAttuale);
 
