@@ -136,8 +136,30 @@
 
                     <!-- 4. SEZIONE CONDIVISIONI (Macro-scenario 3) -->
                     <div id="vista-condivisioni" class="sezione-app d-none">
-                        <h2 class="fw-bold mb-4">Bacheca Condivisioni</h2>
-                        <!-- Contenuto condivisioni -->
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h2 class="fw-bold m-0">Bacheca Condivisioni</h2>
+                                <p class="text-secondary mb-0">Esplora le playlist condivise nelle comunità a cui appartieni o condividi le tue.</p>
+                            </div>
+                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalCondividiPlaylist" onclick="preparaModalCondividi()">
+                                <i class="bi bi-share-fill me-1"></i> Condividi Playlist
+                            </button>
+                        </div>
+
+                        <!-- Filtro rapido per comunità -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <select class="form-select bg-dark text-white border-secondary" id="filtroComunitaCondivisioni" onchange="filtraCondivisioniPerComunita()">
+                                    <option value="tutte">Tutte le mie comunità</option>
+                                    <!-- Popolato dinamicamente via JS -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Griglia delle Playlist Condivise -->
+                        <div id="griglia-condivisioni" class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+                            <!-- Generato dinamicamente da h-condivisioni.js -->
+                        </div>
                     </div>
                 </main>
                 <!-- Modale Nuova Playlist -->
@@ -219,6 +241,37 @@
                             <div class="modal-footer border-secondary">
                                 <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Annulla</button>
                                 <button type="button" class="btn btn-success fw-bold px-4" id="btnSalvaComunita" onclick="salvaComunita()">Salva</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modale Condividi Playlist in Comunità -->
+                <div class="modal fade" id="modalCondividiPlaylist" tabindex="-1" aria-labelledby="modalCondividiPlaylistLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark text-white border-secondary shadow-lg">
+                            <div class="modal-header border-secondary">
+                                <h5 class="modal-title fw-bold" id="modalCondividiPlaylistLabel">Condividi Playlist</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="formCondividiPlaylist">
+                                    <div class="mb-3">
+                                        <label for="selectMiaPlaylist" class="form-label fw-semibold">Scegli la tua Playlist</label>
+                                        <select class="form-select bg-dark text-white border-secondary shadow-none" id="selectMiaPlaylist" required>
+                                            <!-- Popolato dinamicamente -->
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="selectComunitaDestinazione" class="form-label fw-semibold">Scegli la Comunità di destinazione</label>
+                                        <select class="form-select bg-dark text-white border-secondary shadow-none" id="selectComunitaDestinazione" required>
+                                            <!-- Popolato dinamicamente con le sole comunità a cui l'utente è iscritto -->
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Annulla</button>
+                                <button type="button" class="btn btn-success fw-bold px-4" onclick="confermaCondivisionePlaylist()">Condividi</button>
                             </div>
                         </div>
                     </div>
