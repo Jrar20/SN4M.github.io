@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            let utentiSalvati = JSON.parse(localStorage.getItem('utenti'));
+            let utentiSalvati = JSON.parse(localStorage.getItem('utenti')) || [];
             const indice = utentiSalvati.findIndex(u => u.email === emailUtenteAttuale);
 
             if (indice !== -1) {

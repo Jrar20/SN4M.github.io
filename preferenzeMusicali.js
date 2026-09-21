@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // 6. Salviamo tutto di nuovo nel Web Storage
                 localStorage.setItem('utenti', JSON.stringify(utentiSalvati));
+                localStorage.setItem('utenti', JSON.stringify(utentiSalvati));
 
                 // 7. Andiamo all'ultima pagina (artisti/gruppi)
                 window.location.href = 'preferenzeArtisti.html';
