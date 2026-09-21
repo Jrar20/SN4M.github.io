@@ -123,15 +123,14 @@ function aggiornaVistaDaHash() {
     }
 }
 
-function getNomeUtente() {
-    let utentiSalvati = JSON.parse(localStorage.getItem('sn4m_utenti')) || [];
-    const emailUtenteAttuale = localStorage.getItem('utente_loggato');
-    const indice = utentiSalvati.findIndex(u => u.email === emailUtenteAttuale);
+function getNomeUtente(email) {
+    let utentiSalvati = JSON.parse(localStorage.getItem('utenti'));
+    const indice = utentiSalvati.findIndex(u => u.email === email);
 
     if (indice !== -1) {
         return utentiSalvati[indice].username;
     } else {
-        alert("Errore nel trovare l'utente loggato");
+        alert("Errore nel trovare l'utente");
     }
 }
 
@@ -315,10 +314,101 @@ function mostraRisultatiCanzoni(brani) {
     container.innerHTML = html;
 }
 
+// --- RICERCA COMUNITÀ INTERNE ---
 function cercaComunitaLocali(query) {
-    console.log(`Ricerca comunità interne contenenti: ${query}`);
+    // 1. Recupera i dati (sostituisci con la tua chiave localStorage effettiva)
+    const comunitaSalvate = JSON.parse(localStorage.getItem('comunita')) || [];
+    
+    // 2. Filtra in base alla query
+    const risultati = comunitaSalvate.filter(c => 
+        c.titolo.toLowerCase().includes(query.toLowerCase()) || 
+        c.tag.toLowerCase().includes(query.toLowerCase())
+    );
+
+    // 3. Stampa a schermo usando una funzione di rendering dedicata
+    mostraRisultatiComunita(risultati);
 }
 
+// --- RICERCA PLAYLIST PUBBLICHE ---
 function cercaPlaylistCondivise(query, tipoRicerca) {
-    console.log(`Ricerca playlist pubbliche per: ${query} (Criterio: ${tipoRicerca})`);
+    const playlistSalvate = JSON.parse(localStorage.getItem('playlist_pubbliche')) || [];
+    
+    const risultati = playlistSalvate.filter(p => {
+        if (tipoRicerca === 'playlist_tag') return p.tag.toLowerCase().includes(query.toLowerCase());
+        if (tipoRicerca === 'playlist_brano') return p.brani.some(b => b.titolo.toLowerCase().includes(query.toLowerCase()));
+        return false;
+    });
+
+    mostraRisultatiInterni(risultati, 'Playlist Condivise', 'griglia-playlist-template');
 }
+
+// --- RICERCA E VISUALIZZAZIONE COMUNITÀ ---
+function mostraRisultatiComunita(risultati) {
+    let container = document.getElementById('vista-risultati-ricerca');
+    let utenteLog = localStorage.getItem('utente_loggato');
+
+    if (!container) {
+        const main = document.querySelector('.main-content');
+        container = document.createElement('div');
+        container.id = 'vista-risultati-ricerca';
+        container.className = 'sezione-app';
+        main.appendChild(container);
+    }
+
+    container.classList.remove('d-none');
+
+    if (risultati.length === 0) {
+        container.innerHTML = `
+            <h3 class="fw-bold mb-4">Risultati Comunità</h3>
+            <div class="alert alert-dark border-secondary text-secondary" role="alert">
+                Nessuna comunità trovata per questa ricerca.
+            </div>
+        `;
+        return;
+    }
+
+    let html = `
+        <h3 class="fw-bold mb-4">Risultati Comunità</h3>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+    `;
+
+    risultati.forEach(item => {
+        const titolo = item.titolo || 'Senza Titolo';
+        const autore = getNomeUtente(item.creatore) || 'Utente sconosciuto';
+        const tag = item.tag || '';
+        const descrizione = item.descrizione || 'Nessuna descrizione disponibile';
+        
+        // Gestione membri
+        const membri = item.membri || []; 
+        const numeroMembri = membri.length;
+        const giaUnito = membri.includes(utenteLog);
+
+        // Passa 'ricerca' come terzo parametro alla funzione
+        const btnHtml = giaUnito 
+            ? `<button class="btn btn-secondary btn-sm w-100" disabled>Sei già unito</button>`
+            : `<button class="btn btn-success btn-sm w-100" onclick="gestisciIscrizioneComunita('${item.id}', 'uniti', 'ricerca')">Unisciti</button>`;
+
+        html += `
+            <div class="col">
+                <div class="card h-100 bg-dark text-white border-secondary shadow-sm hover-overlay">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold text-success text-truncate mb-1" title="${titolo}">${titolo}</h5>
+                        <p class="text-secondary small mb-1">Di: ${autore}</p>
+                        <p class="text-info small mb-3">Membri: ${numeroMembri}</p>
+                        
+                        <p class="card-text mb-4" style="font-size: 0.9rem;">${descrizione}</p>
+                        
+                        <div class="mt-auto">
+                            ${tag ? `<div class="mb-3"><span class="badge bg-secondary bg-opacity-50 text-light">${tag}</span></div>` : ''}
+                            ${btnHtml}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    html += `</div>`;
+    container.innerHTML = html;
+}
+

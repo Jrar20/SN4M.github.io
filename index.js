@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('psw').value.trim();
 
             // 3. Recupera gli utenti già salvati nel Web Storage
-            let utentiSalvati = JSON.parse(localStorage.getItem('sn4m_utenti'));
+            let utentiSalvati = JSON.parse(localStorage.getItem('utenti'));
 
             if (utentiSalvati === null) {
                 alert("Non ci sono utenti salvati!");

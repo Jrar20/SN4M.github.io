@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('password').value.trim();
 
             // 2. Recuperiamo gli utenti esistenti (o creiamo un array vuoto se è il primo)
-            let utentiSalvati = JSON.parse(localStorage.getItem('sn4m_utenti')) || [];
+            let utentiSalvati = JSON.parse(localStorage.getItem('utenti')) || [];
 
             // Controllo: l'email esiste già?
             const emailEsistente = utentiSalvati.find(u => u.email === email);
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 4. Salviamo l'utente nel Web Storage
             utentiSalvati.push(nuovoUtente);
-            localStorage.setItem('sn4m_utenti', JSON.stringify(utentiSalvati));
+            localStorage.setItem('utenti', JSON.stringify(utentiSalvati));
 
             // 5. IL PASSAGGIO CHIAVE: Salviamo l'email di questo utente come "promemoria"
             // Così la pagina successiva saprà a chi assegnare i generi musicali

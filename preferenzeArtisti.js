@@ -202,12 +202,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            let utentiSalvati = JSON.parse(localStorage.getItem('sn4m_utenti')) || [];
+            let utentiSalvati = JSON.parse(localStorage.getItem('utenti'));
             const indice = utentiSalvati.findIndex(u => u.email === emailUtenteAttuale);
 
             if (indice !== -1) {
                 utentiSalvati[indice].preferenzeArtisti = preferenzeArtisti;
-                localStorage.setItem('sn4m_utenti', JSON.stringify(utentiSalvati));
+                localStorage.setItem('utenti', JSON.stringify(utentiSalvati));
                 
                 // Impostiamo la sessione attiva
                 localStorage.setItem('utente_loggato', emailUtenteAttuale);

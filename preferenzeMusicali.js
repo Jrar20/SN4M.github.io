@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             // Apriamo il "database" del Web Storage
-            let utentiSalvati = JSON.parse(localStorage.getItem('sn4m_utenti')) || [];
+            let utentiSalvati = JSON.parse(localStorage.getItem('utenti'));
 
             // Troviamo la posizione esatta del nostro utente tramite la sua email
             const indice = utentiSalvati.findIndex(u => u.email === emailUtenteAttuale);
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 utentiSalvati[indice].preferenzeMusicali = preferenzeMusicali;
 
                 // 6. Salviamo tutto di nuovo nel Web Storage
-                localStorage.setItem('sn4m_utenti', JSON.stringify(utentiSalvati));
+                localStorage.setItem('utenti', JSON.stringify(utentiSalvati));
 
                 // 7. Andiamo all'ultima pagina (artisti/gruppi)
                 window.location.href = 'preferenzeArtisti.html';
