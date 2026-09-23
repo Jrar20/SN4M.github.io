@@ -329,17 +329,17 @@ function cercaComunitaLocali(query) {
     mostraRisultatiComunita(risultati);
 }
 
-// --- RICERCA PLAYLIST PUBBLICHE ---
+// --- RICERCA PLAYLIST CONDIVISE ---
 function cercaPlaylistCondivise(query, tipoRicerca) {
-    const playlistSalvate = JSON.parse(localStorage.getItem('playlist_pubbliche')) || [];
+    const playlistSalvate = JSON.parse(localStorage.getItem('playlist_condivise'));
     
     const risultati = playlistSalvate.filter(p => {
-        if (tipoRicerca === 'playlist_tag') return p.tag.toLowerCase().includes(query.toLowerCase());
+        if (tipoRicerca === 'playlist_tag') return p.tag.some(t => t.toLowerCase().includes(query.toLowerCase()));
         if (tipoRicerca === 'playlist_brano') return p.brani.some(b => b.titolo.toLowerCase().includes(query.toLowerCase()));
         return false;
     });
 
-    mostraRisultatiInterni(risultati, 'Playlist Condivise', 'griglia-playlist-template');
+    mostraRisultatiPlaylist(risultati);
 }
 
 // --- RICERCA E VISUALIZZAZIONE COMUNITÀ ---
@@ -385,7 +385,10 @@ function mostraRisultatiComunita(risultati) {
 
         // Passa 'ricerca' come terzo parametro alla funzione
         const btnHtml = giaUnito 
-            ? `<button class="btn btn-secondary btn-sm w-100" disabled>Sei già unito</button>`
+            ? `<button class="btn btn-outline-info btn-sm w-100 mb-2" onclick="apriDettaglio('${item.id}', 'Comunità')">
+                <i class="bi bi-eye"></i> Apri Dettagli
+            </button>
+            <button class="btn btn-secondary btn-sm w-100" disabled>Sei già unito</button>`
             : `<button class="btn btn-success btn-sm w-100" onclick="gestisciIscrizioneComunita('${item.id}', 'uniti', 'ricerca')">Unisciti</button>`;
 
         html += `
@@ -412,3 +415,71 @@ function mostraRisultatiComunita(risultati) {
     container.innerHTML = html;
 }
 
+function mostraRisultatiPlaylist(risultati) {
+    let container = document.getElementById('vista-risultati-ricerca');
+    
+    // Se il contenitore non esiste, lo crea (stessa logica che usi per le comunità)
+    if (!container) {
+        const main = document.querySelector('.main-content');
+        container = document.createElement('div');
+        container.id = 'vista-risultati-ricerca';
+        container.className = 'sezione-app';
+        main.appendChild(container);
+    }
+
+    container.classList.remove('d-none');
+
+    // Gestione nessun risultato
+    if (risultati.length === 0) {
+        container.innerHTML = `
+            <h3 class="fw-bold mb-4">Risultati Playlist</h3>
+            <div class="alert alert-dark border-secondary text-secondary" role="alert">
+                Nessuna playlist trovata per questa ricerca.
+            </div>
+        `;
+        return;
+    }
+
+    // Generazione della griglia con i risultati
+    let html = `
+        <h3 class="fw-bold mb-4">Risultati Playlist</h3>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+    `;
+
+    risultati.forEach(p => {
+        // Gestione dei tag se presenti (verifica se è un array o una stringa)
+        let tagHTML = '';
+        if (Array.isArray(p.tag)) {
+            tagHTML = p.tag.map(t => `<span class="badge bg-secondary me-1">${t}</span>`).join('');
+        } else if (typeof p.tag === 'string') {
+            tagHTML = `<span class="badge bg-secondary me-1">${p.tag}</span>`;
+        }
+
+        html += `
+            <div class="col">
+                <div class="card h-100 bg-dark text-white border-secondary shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold text-success">${p.titolo}</h5>
+                        <p class="small text-secondary mb-2">Da: ${p.autoreEmail || 'Utente'}</p>
+                        <p class="card-text small text-light opacity-75">${p.descrizione || ''}</p>
+                        <div class="mb-3">${tagHTML}</div>
+                        
+                        <div class="mt-auto">
+                            <button class="btn btn-outline-info btn-sm w-100" onclick="apriDettaglio('${p.id}', 'Playlist Condivise', 'ricerca')">
+                                <i class="bi bi-eye"></i> Apri Dettagli
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    html += `</div>`;
+    container.innerHTML = html;
+}
+
+function setAccount() {
+    localStorage.removeItem('playlist_condivise');
+    alert("fatto");
+}

@@ -172,7 +172,7 @@ function mostraCondivisioni() {
                         </div>
                         <h5 class="card-title fw-bold text-truncate">${pc.titolo}</h5>
                         <p class="card-subtitle mb-2 text-secondary small">
-                            Condivisa da: <strong class="text-light">${pc.autoreEmail}</strong>
+                            Condivisa da: <strong class="text-light">${getNomeUtente(pc.autoreEmail)}</strong>
                         </p>
                         <p class="card-text text-secondary small flex-grow-1">${pc.descrizione || 'Nessuna descrizione.'}</p>
                         <div class="mb-3">
@@ -199,45 +199,59 @@ function filtraCondivisioniPerComunita() {
     mostraCondivisioni();
 }
 
-// Funzione per clonare una playlist condivisa nel proprio profilo utente
-function importaPlaylistInProfilo(idCondivisa) {
-    const utenteEmail = localStorage.getItem('utente_loggato');
-    if (!utenteEmail) {
-        alert("Devi effettuare il login per importare una playlist.");
+function importaPlaylistInProfilo(idPlaylistCondivisa) {
+    const utenteLoggato = localStorage.getItem('utente_loggato');
+    
+    if (!utenteLoggato) {
+        alert("Devi effettuare il login per poter importare una playlist.");
         return;
     }
 
-    const tutteLeCondivisioni = JSON.parse(localStorage.getItem('playlist_condivise')) || [];
-    const condivisione = tutteLeCondivisioni.find(pc => pc.id === idCondivisa);
+    // 1. Recupera la playlist dalla bacheca delle condivise
+    const condivise = JSON.parse(localStorage.getItem('playlist_condivise')) || [];
+    const playlistDaImportare = condivise.find(p => p.id === idPlaylistCondivisa);
 
-    if (!condivisione) {
-        alert("Playlist condivisa non trovata.");
+    if (!playlistDaImportare) {
+        alert("Playlist non trovata tra quelle condivise.");
         return;
     }
 
-    let miePlaylists = JSON.parse(localStorage.getItem('playlists')) || [];
+    // CONTROLLO 1: L'utente è l'autore della playlist?
+    if (playlistDaImportare.autoreEmail === utenteLoggato) {
+        alert("Non puoi importare una playlist creata da te! Fa già parte del tuo profilo.");
+        return;
+    }
 
-    // Estraggo il nome dell'autore prima del simbolo @ per un titolo pulito
-    const nomeAutore = condivisione.autoreEmail.split('@')[0];
+    // 2. Recupera le playlist personali dell'utente
+    const miePlaylist = JSON.parse(localStorage.getItem('playlist')) || [];
 
-    // Crea un nuovo oggetto playlist indipendente salvato a nome dell'utente loggato
+    // CONTROLLO 2: L'utente ha già importato questa playlist in precedenza?
+    const giaImportata = miePlaylist.some(p => 
+        p.utenteEmail === utenteLoggato && 
+        (p.idOriginale === playlistDaImportare.id || 
+        (p.titolo === playlistDaImportare.titolo && p.autoreOriginale === playlistDaImportare.autoreEmail))
+    );
+
+    if (giaImportata) {
+        alert("Hai già importato questa playlist tra le tue playlist personali!");
+        return;
+    }
+
+    // 3. Creazione della nuova playlist personale (copia indipendente nel profilo)
     const nuovaPlaylist = {
-        id: 'pl_' + Date.now(),
-        utente: utenteEmail,
-        titolo: `${condivisione.titolo} (da ${nomeAutore})`,
-        descrizione: `Importata dalla comunità "${condivisione.titoloComunita}". ${condivisione.descrizione || ''}`.trim(),
-        tag: Array.isArray(condivisione.tag) ? [...condivisione.tag] : [],
-        canzoni: Array.isArray(condivisione.canzoni) ? [...condivisione.canzoni] : [],
-        dataInserimento: new Date().toISOString()
+        id: 'pl_' + Date.now(), // Nuovo ID univoco per la copia personale
+        idOriginale: playlistDaImportare.id, // Salva il riferimento per prevenire futuri duplicati
+        autoreOriginale: playlistDaImportare.autoreEmail,
+        utenteEmail: utenteLoggato, // Appartiene all'utente correntemente loggato
+        titolo: playlistDaImportare.titolo,
+        descrizione: playlistDaImportare.descrizione || '',
+        tag: playlistDaImportare.tag || [],
+        canzoni: playlistDaImportare.canzoni || playlistDaImportare.brani || []
     };
 
-    miePlaylists.push(nuovaPlaylist);
-    localStorage.setItem('playlists', JSON.stringify(miePlaylists));
+    // 4. Salva nel LocalStorage delle playlist personali
+    miePlaylist.push(nuovaPlaylist);
+    localStorage.setItem('playlist', JSON.stringify(miePlaylist));
 
-    alert(`La playlist "${condivisione.titolo}" è stata importata con successo nella tua libreria!`);
-
-    // Aggiorna la vista delle playlist personali se attiva
-    if (typeof mostraMiePlaylists === 'function') {
-        mostraMiePlaylists();
-    }
+    alert(`La playlist "${playlistDaImportare.titolo}" è stata importata con successo nella tua libreria!`);
 }

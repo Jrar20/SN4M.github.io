@@ -90,7 +90,7 @@ function mostraComunita() {
                             <!-- Azioni per la comunità -->
                             <div class="d-flex gap-2">
                                 ${sonoMembro ? `
-                                    <button class="btn btn-outline-info btn-sm" onclick="apriDettaglio('${c.id}')">
+                                    <button class="btn btn-outline-info btn-sm" onclick="apriDettaglio('${c.id}', 'Comunità', 'griglia')">
                                         <i class="bi bi-eye"></i> Dettagli
                                     </button>
                                     <button class="btn btn-outline-danger btn-sm" onclick="gestisciIscrizioneComunita('${c.id}', 'lascia', 'griglia')">Lascia</button>
@@ -186,11 +186,19 @@ function eliminaComunita(id) {
     mostraComunita();
 }
 
-function apriDettaglio(id, tipoRicerca) {
-    const contenitore = document.getElementById('vista-risultati-ricerca');
+function apriDettaglio(id, tipoRicerca, origine = 'ricerca') {
+    // Seleziona il contenitore corretto in base all'origine della chiamata
+    let contenitore = origine === 'griglia' 
+        ? document.getElementById('griglia-comunita') 
+        : document.getElementById('vista-risultati-ricerca');
+
+    // Fallback nel caso in cui uno dei due contenitori non fosse presente nel DOM
+    if (!contenitore) {
+        contenitore = document.getElementById('griglia-comunita') || document.getElementById('vista-risultati-ricerca');
+    }
+
     if (!contenitore) return;
 
-    // Recupera l'utente usando la tua chiave esatta
     const utenteEmail = localStorage.getItem('utente_loggato');
 
     if (tipoRicerca === 'Comunità') {
@@ -199,42 +207,74 @@ function apriDettaglio(id, tipoRicerca) {
         
         if (!comunita) return alert("Comunità non trovata.");
 
-        // Gestione corretta dell'array tag (come nel tuo codice)
-        const tagHTML = comunita.tag ? comunita.tag.map(t => `<span class="badge bg-secondary me-1">${t}</span>`).join('') : '';
-        
-        // Verifica se l'utente è membro usando il TUO array 'membri'
         const sonoMembro = comunita.membri && comunita.membri.includes(utenteEmail);
+        
+        if (!sonoMembro) {
+            alert("Devi unirti a questa comunità per poterne visualizzare i dettagli e le playlist condivise.");
+            return;
+        }
+
+        const tagHTML = comunita.tag ? comunita.tag.map(t => `<span class="badge bg-secondary me-1">${t}</span>`).join('') : '';
         const numeroMembri = comunita.membri ? comunita.membri.length : 1;
         
-        // Genera il bottone corretto collegato alla tua funzione gestisciIscrizioneComunita.
-        // Aggiungo la chiamata per ricaricare la vista dettaglio così il tasto si aggiorna subito.
-        const azioneHTML = sonoMembro 
-            ? `<button class="btn btn-outline-danger" onclick="gestisciIscrizioneComunita('${comunita.id}', 'lascia'); apriDettaglio('${comunita.id}', 'Comunità');">
-                 <i class="bi bi-box-arrow-right"></i> Lascia la Comunità
+        // Configura il comportamento del pulsante "Torna indietro"
+        const btnTornaIndietro = origine === 'griglia'
+            ? `<button class="btn btn-outline-light btn-sm mb-4 align-self-start" onclick="mostraComunita()">
+                <i class="bi bi-arrow-left"></i> Torna alle Comunità
                </button>`
-            : `<button class="btn btn-success" onclick="gestisciIscrizioneComunita('${comunita.id}', 'uniti'); apriDettaglio('${comunita.id}', 'Comunità');">
-                 <i class="bi bi-person-plus"></i> Unisciti alla Comunità
+            : `<button class="btn btn-outline-light btn-sm mb-4 align-self-start" onclick="document.getElementById('testoRicerca').closest('form').dispatchEvent(new Event('submit'))">
+                <i class="bi bi-arrow-left"></i> Torna ai Risultati
                </button>`;
 
-        contenitore.innerHTML = `
-            <div class="container-fluid px-0 w-100">
-                <div class="card bg-dark text-white border-secondary shadow-lg p-4 w-100">
-                    <div class="d-flex justify-content-between align-items-start mb-4">
-                        <div>
-                            <button class="btn btn-outline-light btn-sm mb-3" onclick="eseguiRicercaGenerale()">
-                                <i class="bi bi-arrow-left"></i> Torna ai Risultati
+        const azioneLascia = origine === 'griglia'
+            ? `gestisciIscrizioneComunita('${comunita.id}', 'lascia', 'griglia'); mostraComunita();`
+            : `gestisciIscrizioneComunita('${comunita.id}', 'lascia', 'ricerca'); eseguiRicercaGenerale(new Event('submit'));`;
+
+        // Recupera le playlist condivise all'interno di questa specifica comunità
+        const tutteLeCondivisioni = JSON.parse(localStorage.getItem('playlist_condivise')) || [];
+        const playlistDellaComunita = tutteLeCondivisioni.filter(pc => pc.idComunita === comunita.id);
+        
+        let playlistHTML = '<p class="text-secondary">Nessuna playlist condivisa in questa comunità.</p>';
+        
+        if (playlistDellaComunita.length > 0) {
+            playlistHTML = `<div class="row row-cols-1 row-cols-md-2 g-3 mt-2">` + 
+                playlistDellaComunita.map(pc => `
+                    <div class="col">
+                        <div class="card bg-dark border-secondary p-3 h-100">
+                            <h6 class="text-success fw-bold text-truncate">${pc.titolo}</h6>
+                            <p class="text-secondary small mb-2">Da: ${getNomeUtente(pc.autoreEmail)}</p>
+                            <p class="text-light small mb-3 flex-grow-1">${pc.descrizione || ''}</p>
+                            <button class="btn btn-sm btn-outline-success" onclick="importaPlaylistInProfilo('${pc.id}')">
+                                <i class="bi bi-download"></i> Importa
                             </button>
+                        </div>
+                    </div>
+                `).join('') + `</div>`;
+        }
+
+        contenitore.innerHTML = `
+            <div class="col-12 w-100">
+                <div class="card bg-dark text-white border-secondary shadow-lg p-4 w-100">
+                    ${btnTornaIndietro}
+                    <div class="row">
+                        <!-- Colonna Sinistra: Info Comunità -->
+                        <div class="col-md-5 border-end border-secondary mb-4 mb-md-0">
                             <h2 class="fw-bold text-success mb-1">${comunita.titolo}</h2>
-                            <p class="text-secondary mb-2">Creata da: ${comunita.creatore || 'Utente Sconosciuto'}</p>
+                            <p class="text-secondary mb-2">Creata da: ${getNomeUtente(comunita.creatore)}</p>
                             <div class="mb-3">${tagHTML}</div>
-                            
-                            <!-- Aggiunto il conteggio dei membri nella vista dettaglio -->
                             <div class="mb-4">
                                 <span class="badge bg-dark border border-secondary text-light">Membri iscritti: ${numeroMembri}</span>
                             </div>
-                            
-                            <p class="text-light mb-4">${comunita.descrizione || 'Nessuna descrizione disponibile.'}</p>
-                            ${azioneHTML}
+                            <p class="text-light mb-4">${comunita.descrizione || 'Nessuna descrizione.'}</p>
+                            <button class="btn btn-outline-danger" onclick="${azioneLascia}">
+                                <i class="bi bi-box-arrow-right"></i> Lascia la Comunità
+                            </button>
+                        </div>
+                        
+                        <!-- Colonna Destra: Bacheca Playlist della Comunità -->
+                        <div class="col-md-7 ps-md-4">
+                            <h4 class="fw-bold text-light mb-3"><i class="bi bi-music-note-list"></i> Playlist Condivise Qui</h4>
+                            ${playlistHTML}
                         </div>
                     </div>
                 </div>
@@ -242,7 +282,41 @@ function apriDettaglio(id, tipoRicerca) {
         `;
 
     } else if (tipoRicerca === 'Playlist Condivise') {
-        // [QUI RIMANE INVARIATO IL CODICE DELLE PLAYLIST DEL MESSAGGIO PRECEDENTE]
-        // ... (Usa la struttura della playlist del blocco if precedente)
+        const playlistCondivise = JSON.parse(localStorage.getItem('playlist_condivise')) || [];
+        const playlist = playlistCondivise.find(p => p.id === id);
+        
+        if (!playlist) return alert("Playlist non trovata.");
+
+        const tagHTML = playlist.tag ? playlist.tag.map(t => `<span class="badge bg-secondary me-1">${t}</span>`).join('') : '';
+        const canzoniHTML = (playlist.canzoni || []).map(c => 
+            `<li class="list-group-item bg-dark text-white border-secondary d-flex justify-content-between align-items-center">
+                <span><strong>${c.titolo}</strong> <span class="text-secondary small">di ${c.cantante}</span></span>
+                <span class="badge bg-secondary rounded-pill">${c.durata}</span>
+            </li>`
+        ).join('');
+
+        contenitore.innerHTML = `
+            <div class="col-12 w-100">
+                <div class="card bg-dark text-white border-secondary shadow-lg p-4 w-100">
+                    <button class="btn btn-outline-light btn-sm mb-4 align-self-start" onclick="document.getElementById('testoRicerca').closest('form').dispatchEvent(new Event('submit'))">
+                        <i class="bi bi-arrow-left"></i> Torna ai Risultati
+                    </button>
+                    
+                    <h2 class="fw-bold text-success mb-1">${playlist.titolo}</h2>
+                    <p class="text-secondary mb-2">Condivisa da: ${playlist.autoreEmail} nella comunità "${playlist.titoloComunita}"</p>
+                    <div class="mb-3">${tagHTML}</div>
+                    <p class="text-light mb-4">${playlist.descrizione || 'Nessuna descrizione.'}</p>
+                    
+                    <button class="btn btn-success mb-4" onclick="importaPlaylistInProfilo('${playlist.id}')">
+                        <i class="bi bi-download"></i> Importa nella tua libreria
+                    </button>
+
+                    <h5 class="fw-bold text-light mb-3">Brani inclusi (${playlist.canzoni ? playlist.canzoni.length : 0})</h5>
+                    <ul class="list-group list-group-flush border-top border-secondary">
+                        ${canzoniHTML || '<li class="list-group-item bg-dark text-secondary border-0 px-0">Nessun brano presente.</li>'}
+                    </ul>
+                </div>
+            </div>
+        `;
     }
 }
