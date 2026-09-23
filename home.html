@@ -61,7 +61,7 @@
                         <form class="d-flex mx-auto search-form flex-grow-1 px-2" role="search" onsubmit="eseguiRicercaGenerale(event)">
                             <div class="input-group search-group mx-auto">
                                 <!-- Menu a tendina integrato -->
-                                <select class="form-select bg-transparent text-secondary border-0 shadow-none ps-3 pe-4" id="contestoRicerca" style="max-width: 140px; font-size: 0.85rem; cursor: pointer;">
+                                <select class="form-select bg-transparent text-secondary border-0 shadow-none ps-3 pe-4" id="contestoRicerca" style="max-width: 11rem; font-size: 0.85rem; cursor: pointer;">
                                     <optgroup label="API Spotify">
                                         <option value="canzone_titolo">Canzone (Titolo)</option>
                                         <option value="canzone_artista">Canzone (Cantante)</option>
@@ -92,7 +92,7 @@
                                     <span id="nomeUtenteNav" class="d-none d-md-inline fw-semibold me-2 pe-1">Profilo</span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow mt-2 border-0">
-                                    <li><a class="dropdown-item fw-semibold" href="#" onclick="setAccount()">Account</a></li>
+                                    <li><button class="dropdown-item fw-semibold" onclick="setAccount()">Account</button></li>
                                     <li><hr class="dropdown-divider border-secondary"></li>
                                     <li><a class="dropdown-item text-danger fw-semibold" href="#" id="btnLogout">Esci</a></li>
                                 </ul>

@@ -1,7 +1,7 @@
 // Funzione per popolare le select del modale di condivisione
 function preparaModalCondividi() {
     const utenteEmail = localStorage.getItem('utente_loggato');
-    const tutteLePlaylists = JSON.parse(localStorage.getItem('playlists')) || [];
+    const tutteLePlaylists = JSON.parse(localStorage.getItem('playlist')) || [];
     const tutteLeComunita = JSON.parse(localStorage.getItem('comunita')) || [];
 
     // Filtra solo le playlist di proprietà dell'utente
@@ -44,7 +44,7 @@ function confermaCondivisionePlaylist() {
     }
 
     const utenteEmail = localStorage.getItem('utente_loggato');
-    const tutteLePlaylists = JSON.parse(localStorage.getItem('playlists')) || [];
+    const tutteLePlaylists = JSON.parse(localStorage.getItem('playlist')) || [];
     const tutteLeComunita = JSON.parse(localStorage.getItem('comunita')) || [];
     let playlistCondivise = JSON.parse(localStorage.getItem('playlist_condivise')) || [];
 
@@ -118,7 +118,6 @@ function mostraCondivisioni() {
         filtroComunita.innerHTML = '<option value="tutte">Tutte le mie comunità</option>' +
             mieComunita.map(c => `<option value="${c.id}">${c.titolo}</option>`).join('');
         
-        // Mantiene la selezione precedente se ancora valida
         if (mieComunita.some(c => c.id === valoreSelezionato)) {
             filtroComunita.value = valoreSelezionato;
         } else {
@@ -128,7 +127,7 @@ function mostraCondivisioni() {
 
     const idComunitaSelezionata = filtroComunita ? filtroComunita.value : 'tutte';
 
-    // Filtra le playlist: mostra solo quelle appartenenti alle comunità dell'utente
+    // Filtra le playlist appartenenti alle comunità dell'utente
     const condivisioniVisibili = tutteLeCondivisioni.filter(pc => {
         const faParteDelleMieComunita = idsMieComunita.includes(pc.idComunita);
         if (!faParteDelleMieComunita) return false;
@@ -139,7 +138,6 @@ function mostraCondivisioni() {
         return true;
     });
 
-    // Se non ci sono condivisioni visualizza messaggio vuoto
     if (condivisioniVisibili.length === 0) {
         griglia.innerHTML = `
             <div class="col-12 text-center py-5 text-secondary">
@@ -151,7 +149,14 @@ function mostraCondivisioni() {
 
     // Generazione dinamica delle card
     griglia.innerHTML = condivisioniVisibili.map(pc => {
+        // 1. Trova la comunità a cui appartiene questa condivisione
+        const comunitaRiferimento = tutteLeComunita.find(c => c.id === pc.idComunita);
+        
+        // 2. Verifiche permessi: Autore del post o Creatore della comunità?
         const eAutore = pc.autoreEmail === utenteEmail;
+        const eCreatoreComunita = comunitaRiferimento && comunitaRiferimento.creatore === utenteEmail;
+        const puoRimuovere = eAutore || eCreatoreComunita;
+
         const tagHTML = pc.tag && pc.tag.length > 0 
             ? pc.tag.map(t => `<span class="badge bg-secondary me-1 mb-1">${t}</span>`).join('') 
             : '';
@@ -159,6 +164,20 @@ function mostraCondivisioni() {
         const dataFormattata = pc.dataCondivisione 
             ? new Date(pc.dataCondivisione).toLocaleDateString() 
             : 'Recente';
+
+        // 3. Logica dei pulsanti d'azione
+        let bottoneAzioneHTML = '';
+        if (puoRimuovere) {
+            bottoneAzioneHTML = `
+                <button class="btn btn-outline-danger btn-sm fw-semibold" onclick="rimuoviCondivisione('${pc.id}')" title="Rimuovi dalla comunità">
+                    <i class="bi bi-trash me-1"></i> Rimuovi
+                </button>`;
+        } else {
+            bottoneAzioneHTML = `
+                <button class="btn btn-outline-success btn-sm fw-semibold" onclick="importaPlaylistInProfilo('${pc.id}')">
+                    <i class="bi bi-download me-1"></i> Importa
+                </button>`;
+        }
 
         return `
             <div class="col">
@@ -173,6 +192,7 @@ function mostraCondivisioni() {
                         <h5 class="card-title fw-bold text-truncate">${pc.titolo}</h5>
                         <p class="card-subtitle mb-2 text-secondary small">
                             Condivisa da: <strong class="text-light">${getNomeUtente(pc.autoreEmail)}</strong>
+                            ${eAutore ? '<span class="badge bg-dark border border-secondary text-secondary ms-1">Tua</span>' : ''}
                         </p>
                         <p class="card-text text-secondary small flex-grow-1">${pc.descrizione || 'Nessuna descrizione.'}</p>
                         <div class="mb-3">
@@ -180,12 +200,7 @@ function mostraCondivisioni() {
                         </div>
                         <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary mt-auto">
                             <span class="small text-secondary"><i class="bi bi-disc me-1"></i>${numBrani} brani</span>
-                            ${eAutore 
-                                ? `<span class="badge bg-dark text-secondary border border-secondary">Tua condivisione</span>`
-                                : `<button class="btn btn-outline-success btn-sm fw-semibold" onclick="importaPlaylistInProfilo('${pc.id}')">
-                                    <i class="bi bi-download me-1"></i> Importa
-                                   </button>`
-                            }
+                            ${bottoneAzioneHTML}
                         </div>
                     </div>
                 </div>
@@ -199,59 +214,45 @@ function filtraCondivisioniPerComunita() {
     mostraCondivisioni();
 }
 
-function importaPlaylistInProfilo(idPlaylistCondivisa) {
-    const utenteLoggato = localStorage.getItem('utente_loggato');
+function rimuoviCondivisione(idCondivisione) {
+    const conferma = confirm("Vuoi rimuovere questa playlist dalla comunità? Resterà comunque tra le playlist personali dell'autore.");
     
-    if (!utenteLoggato) {
-        alert("Devi effettuare il login per poter importare una playlist.");
-        return;
+    if (conferma) {
+        const condivise = JSON.parse(localStorage.getItem('playlist_condivise')) || [];
+        
+        // Rimuove l'elemento
+        const condiviseAggiornate = condivise.filter(pc => pc.id !== idCondivisione);
+        
+        // Salva in LocalStorage
+        localStorage.setItem('playlist_condivise', JSON.stringify(condiviseAggiornate));
+        
+        // Ricarica la vista delle condivisioni
+        if (typeof mostraCondivisioni === 'function') {
+            mostraCondivisioni();
+        }
     }
+}
 
-    // 1. Recupera la playlist dalla bacheca delle condivise
+function sincronizzaPlaylistCondivise(playlistAggiornata) {
     const condivise = JSON.parse(localStorage.getItem('playlist_condivise')) || [];
-    const playlistDaImportare = condivise.find(p => p.id === idPlaylistCondivisa);
+    let trovataESincronizzata = false;
 
-    if (!playlistDaImportare) {
-        alert("Playlist non trovata tra quelle condivise.");
-        return;
+    const condiviseAggiornate = condivise.map(pc => {
+        // Usa la chiave idPlaylistOriginale come definito in confermaCondivisionePlaylist
+        if (pc.idPlaylistOriginale === playlistAggiornata.id) {
+            trovataESincronizzata = true;
+            return {
+                ...pc,
+                titolo: playlistAggiornata.titolo,
+                descrizione: playlistAggiornata.descrizione,
+                tag: playlistAggiornata.tag,
+                canzoni: playlistAggiornata.canzoni
+            };
+        }
+        return pc;
+    });
+
+    if (trovataESincronizzata) {
+        localStorage.setItem('playlist_condivise', JSON.stringify(condiviseAggiornate));
     }
-
-    // CONTROLLO 1: L'utente è l'autore della playlist?
-    if (playlistDaImportare.autoreEmail === utenteLoggato) {
-        alert("Non puoi importare una playlist creata da te! Fa già parte del tuo profilo.");
-        return;
-    }
-
-    // 2. Recupera le playlist personali dell'utente
-    const miePlaylist = JSON.parse(localStorage.getItem('playlist')) || [];
-
-    // CONTROLLO 2: L'utente ha già importato questa playlist in precedenza?
-    const giaImportata = miePlaylist.some(p => 
-        p.utenteEmail === utenteLoggato && 
-        (p.idOriginale === playlistDaImportare.id || 
-        (p.titolo === playlistDaImportare.titolo && p.autoreOriginale === playlistDaImportare.autoreEmail))
-    );
-
-    if (giaImportata) {
-        alert("Hai già importato questa playlist tra le tue playlist personali!");
-        return;
-    }
-
-    // 3. Creazione della nuova playlist personale (copia indipendente nel profilo)
-    const nuovaPlaylist = {
-        id: 'pl_' + Date.now(), // Nuovo ID univoco per la copia personale
-        idOriginale: playlistDaImportare.id, // Salva il riferimento per prevenire futuri duplicati
-        autoreOriginale: playlistDaImportare.autoreEmail,
-        utenteEmail: utenteLoggato, // Appartiene all'utente correntemente loggato
-        titolo: playlistDaImportare.titolo,
-        descrizione: playlistDaImportare.descrizione || '',
-        tag: playlistDaImportare.tag || [],
-        canzoni: playlistDaImportare.canzoni || playlistDaImportare.brani || []
-    };
-
-    // 4. Salva nel LocalStorage delle playlist personali
-    miePlaylist.push(nuovaPlaylist);
-    localStorage.setItem('playlist', JSON.stringify(miePlaylist));
-
-    alert(`La playlist "${playlistDaImportare.titolo}" è stata importata con successo nella tua libreria!`);
 }

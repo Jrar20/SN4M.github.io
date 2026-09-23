@@ -316,22 +316,33 @@ function mostraRisultatiCanzoni(brani) {
 
 // --- RICERCA COMUNITÀ INTERNE ---
 function cercaComunitaLocali(query) {
-    // 1. Recupera i dati (sostituisci con la tua chiave localStorage effettiva)
     const comunitaSalvate = JSON.parse(localStorage.getItem('comunita')) || [];
-    
-    // 2. Filtra in base alla query
-    const risultati = comunitaSalvate.filter(c => 
-        c.titolo.toLowerCase().includes(query.toLowerCase()) || 
-        c.tag.toLowerCase().includes(query.toLowerCase())
-    );
+    const q = query.toLowerCase().trim();
 
-    // 3. Stampa a schermo usando una funzione di rendering dedicata
+    const risultati = comunitaSalvate.filter(c => {
+        // 1. Controllo sul titolo
+        const matchTitolo = c.titolo && c.titolo.toLowerCase().includes(q);
+
+        // 2. Controllo sui tag (gestisce sia Array che Stringa)
+        let matchTag = false;
+        if (c.tag) {
+            if (Array.isArray(c.tag)) {
+                matchTag = c.tag.some(t => t.toLowerCase().includes(q));
+            } else if (typeof c.tag === 'string') {
+                matchTag = c.tag.toLowerCase().includes(q);
+            }
+        }
+
+        return matchTitolo || matchTag;
+    });
+
+    // 3. Stampa a schermo i risultati
     mostraRisultatiComunita(risultati);
 }
 
 // --- RICERCA PLAYLIST CONDIVISE ---
 function cercaPlaylistCondivise(query, tipoRicerca) {
-    const playlistSalvate = JSON.parse(localStorage.getItem('playlist_condivise'));
+    const playlistSalvate = JSON.parse(localStorage.getItem('playlist_condivise')) || [];
     
     const risultati = playlistSalvate.filter(p => {
         if (tipoRicerca === 'playlist_tag') return p.tag.some(t => t.toLowerCase().includes(query.toLowerCase()));
@@ -481,5 +492,7 @@ function mostraRisultatiPlaylist(risultati) {
 
 function setAccount() {
     localStorage.removeItem('playlist_condivise');
+    localStorage.removeItem('playlist');
+    localStorage.removeItem('comunita');
     alert("fatto");
 }

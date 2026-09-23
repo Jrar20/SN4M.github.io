@@ -11,7 +11,7 @@ function preparaNuovaPlaylist() {
 
 // Prepara il modale per la MODIFICA
 function modificaPlaylist(id) {
-    const tutteLePlaylists = JSON.parse(localStorage.getItem('playlists')) || [];
+    const tutteLePlaylists = JSON.parse(localStorage.getItem('playlist')) || [];
     const playlist = tutteLePlaylists.find(pl => pl.id === id);
     if (!playlist) return;
 
@@ -46,7 +46,8 @@ function salvaPlaylist() {
     const tagArray = rawTag.split(/\s+/).map(t => t.replace(/[,#]/g, '').trim()).filter(t => t.length > 0).map(t => `#${t}`);
     if (tagArray.length === 0) return alert("Inserisci almeno un tag valido.");
 
-    const tutteLePlaylists = JSON.parse(localStorage.getItem('playlists')) || [];
+    // 1. CHIAVE CORRETTA: 'playlist' (senza 's' finale)
+    const tutteLePlaylists = JSON.parse(localStorage.getItem('playlist')) || [];
 
     if (playlistInModificaId) {
         // MODIFICA
@@ -61,29 +62,40 @@ function salvaPlaylist() {
         const utenteEmail = localStorage.getItem('utente_loggato');
         const nuovaPlaylist = {
             id: 'pl_' + Date.now(),
+            idOriginale: null,       // Mantiene la struttura coerente con le importate
+            autoreOriginale: null,   // Mantiene la struttura coerente con le importate
             utente: utenteEmail,
             titolo: titolo,
             descrizione: descrizione,
             tag: tagArray,
             dataCreazione: new Date().toISOString(),
-            canzoni: [] // Predisposizione per la fase successiva
+            canzoni: [] 
         };
         tutteLePlaylists.push(nuovaPlaylist);
     }
 
-    localStorage.setItem('playlists', JSON.stringify(tutteLePlaylists));
+    // 2. SALVATAGGIO SULLA CHIAVE CORRETTA 'playlist'
+    localStorage.setItem('playlist', JSON.stringify(tutteLePlaylists));
 
-    const modalElement = document.getElementById('modalNuovaPlaylist');
-    bootstrap.Modal.getInstance(modalElement).hide();
+    // NUOVO: Sincronizza i dati anagrafici se eravamo in modifica
+    if (playlistInModificaId) {
+        const indexModificata = tutteLePlaylists.findIndex(pl => pl.id === playlistInModificaId);
+        if (indexModificata !== -1) {
+            sincronizzaPlaylistCondivise(tutteLePlaylists[indexModificata]);
+        }
+    }
 
-    mostraPlaylists();
+    // Assicurati che anche mostraPlaylists() legga da 'playlist'
+    if (typeof mostraPlaylists === 'function') {
+        mostraPlaylists();
+    }
 }
 
 // Funzione per generare e mostrare le Card a schermo
 function mostraPlaylists() {
     const contenitore = document.getElementById('griglia-playlist');
     const utenteEmail = localStorage.getItem('utente_loggato');
-    const tutteLePlaylists = JSON.parse(localStorage.getItem('playlists')) || [];
+    const tutteLePlaylists = JSON.parse(localStorage.getItem('playlist')) || [];
     
     // Filtra solo le playlist dell'utente loggato
     const miePlaylists = tutteLePlaylists.filter(pl => pl.utente === utenteEmail);
@@ -136,23 +148,25 @@ function eliminaPlaylist(id) {
     const conferma = confirm("Sei sicuro di voler eliminare questa playlist? L'azione è irreversibile.");
     
     if (conferma) {
-        // 2. Recupera l'array corrente dal localStorage
-        const tutteLePlaylists = JSON.parse(localStorage.getItem('playlists')) || [];
-        
-        // 3. Filtra le playlist escludendo quella con l'ID passato
+        // 2. ELIMINAZIONE DALLE PLAYLIST PERSONALI ('playlist')
+        const tutteLePlaylists = JSON.parse(localStorage.getItem('playlist')) || [];
         const playlistAggiornate = tutteLePlaylists.filter(pl => pl.id !== id);
+        localStorage.setItem('playlist', JSON.stringify(playlistAggiornate));
         
-        // 4. Salva il nuovo array aggiornato nel localStorage
-        localStorage.setItem('playlists', JSON.stringify(playlistAggiornate));
+        // 3. ELIMINAZIONE DALLE PLAYLIST CONDIVISE ('playlist_condivise')
+        // Rimuove la playlist se il suo ID coincide oppure se l'idOriginale coincide
+        const condivise = JSON.parse(localStorage.getItem('playlist_condivise')) || [];
+        const condiviseAggiornate = condivise.filter(pc => pc.id !== id && pc.idOriginale !== id);
+        localStorage.setItem('playlist_condivise', JSON.stringify(condiviseAggiornate));
         
-        // 5. Ricarica la griglia per aggiornare la visualizzazione
+        // 4. Ricarica la griglia per aggiornare la visualizzazione
         mostraPlaylists();
     }
 }
 
 // Restituisce tutte le playlist salvate nel browser
 function getTutteLePlaylist() {
-    return JSON.parse(localStorage.getItem('playlists'));
+    return JSON.parse(localStorage.getItem('playlist'));
 }
 
 // Restituisce solo le playlist create dall'utente attualmente loggato
@@ -170,7 +184,7 @@ function aggiungiAFormPlaylist(brano) {
     branoSelezionatoCorrente = brano;
     
     const utenteEmail = localStorage.getItem('utente_loggato');
-    const tutteLePlaylists = JSON.parse(localStorage.getItem('playlists')) || [];
+    const tutteLePlaylists = JSON.parse(localStorage.getItem('playlist')) || [];
     const miePlaylists = tutteLePlaylists.filter(pl => pl.utente === utenteEmail);
 
     const containerLista = document.getElementById('listaPlaylistPerAggiunta');
@@ -203,7 +217,7 @@ function aggiungiAFormPlaylist(brano) {
 function confermaAggiuntaBrano(playlistId) {
     if (!branoSelezionatoCorrente) return;
 
-    let tutteLePlaylists = JSON.parse(localStorage.getItem('playlists')) || [];
+    let tutteLePlaylists = JSON.parse(localStorage.getItem('playlist')) || [];
     const index = tutteLePlaylists.findIndex(pl => pl.id === playlistId);
 
     if (index !== -1) {
@@ -224,7 +238,10 @@ function confermaAggiuntaBrano(playlistId) {
         tutteLePlaylists[index].canzoni.push(branoSelezionatoCorrente);
 
         // Salva nel localStorage
-        localStorage.setItem('playlists', JSON.stringify(tutteLePlaylists));
+        localStorage.setItem('playlist', JSON.stringify(tutteLePlaylists));
+
+        // NUOVO: Sincronizza con la bacheca condivisioni
+        sincronizzaPlaylistCondivise(tutteLePlaylists[index]);
 
         // Chiude il modale
         const modalElement = document.getElementById('modalAggiungiBrano');
@@ -239,7 +256,7 @@ function confermaAggiuntaBrano(playlistId) {
 
 // Funzione per aprire e visualizzare i dettagli della playlist occupando tutta la dashboard
 function apriPlaylist(id) {
-    const tutteLePlaylists = JSON.parse(localStorage.getItem('playlists')) || [];
+    const tutteLePlaylists = JSON.parse(localStorage.getItem('playlist')) || [];
     const playlist = tutteLePlaylists.find(pl => pl.id === id);
     
     if (!playlist) {
@@ -327,14 +344,74 @@ function apriPlaylist(id) {
 function rimuoviBranoDaPlaylist(playlistId, branoId) {
     if (!confirm("Vuoi rimuovere questo brano dalla playlist?")) return;
 
-    let tutteLePlaylists = JSON.parse(localStorage.getItem('playlists')) || [];
+    let tutteLePlaylists = JSON.parse(localStorage.getItem('playlist')) || [];
     const index = tutteLePlaylists.findIndex(pl => pl.id === playlistId);
 
     if (index !== -1) {
         tutteLePlaylists[index].canzoni = tutteLePlaylists[index].canzoni.filter(b => b.id !== branoId);
-        localStorage.setItem('playlists', JSON.stringify(tutteLePlaylists));
+        localStorage.setItem('playlist', JSON.stringify(tutteLePlaylists));
+        
+        // NUOVO: Sincronizza la rimozione
+        sincronizzaPlaylistCondivise(tutteLePlaylists[index]);
         
         // Aggiorna la vista ricaricando la schermata di dettaglio
         apriPlaylist(playlistId);
     }
+}
+
+function importaPlaylistInProfilo(idPlaylistCondivisa) {
+    const utenteLoggato = localStorage.getItem('utente_loggato');
+    
+    if (!utenteLoggato) {
+        alert("Devi effettuare il login per poter importare una playlist.");
+        return;
+    }
+
+    // 1. Recupera la playlist dalla bacheca delle condivise
+    const condivise = JSON.parse(localStorage.getItem('playlist_condivise')) || [];
+    const playlistDaImportare = condivise.find(p => p.id === idPlaylistCondivisa);
+
+    if (!playlistDaImportare) {
+        alert("Playlist non trovata tra quelle condivise.");
+        return;
+    }
+
+    // CONTROLLO 1: L'utente è l'autore della playlist?
+    if (playlistDaImportare.autoreEmail === utenteLoggato) {
+        alert("Non puoi importare una playlist creata da te! Fa già parte del tuo profilo.");
+        return;
+    }
+
+    // 2. Recupera le playlist personali dell'utente
+    const miePlaylist = JSON.parse(localStorage.getItem('playlist')) || [];
+
+    // CONTROLLO 2: L'utente ha già importato questa playlist in precedenza?
+    const giaImportata = miePlaylist.some(p => 
+        p.utenteEmail === utenteLoggato && 
+        (p.idOriginale === playlistDaImportare.id || 
+        (p.titolo === playlistDaImportare.titolo && p.autoreOriginale === playlistDaImportare.autoreEmail))
+    );
+
+    if (giaImportata) {
+        alert("Hai già importato questa playlist tra le tue playlist personali!");
+        return;
+    }
+
+    // 3. Creazione della nuova playlist personale (copia indipendente nel profilo)
+    const nuovaPlaylist = {
+        id: 'pl_' + Date.now(), // Nuovo ID univoco per la copia personale
+        idOriginale: playlistDaImportare.id, // Salva il riferimento per prevenire futuri duplicati
+        autoreOriginale: playlistDaImportare.autoreEmail,
+        utente: utenteLoggato, // Appartiene all'utente correntemente loggato
+        titolo: playlistDaImportare.titolo,
+        descrizione: playlistDaImportare.descrizione || '',
+        tag: playlistDaImportare.tag || [],
+        canzoni: playlistDaImportare.canzoni || playlistDaImportare.brani || []
+    };
+
+    // 4. Salva nel LocalStorage delle playlist personali
+    miePlaylist.push(nuovaPlaylist);
+    localStorage.setItem('playlist', JSON.stringify(miePlaylist));
+
+    alert(`La playlist "${playlistDaImportare.titolo}" è stata importata con successo nella tua libreria!`);
 }
